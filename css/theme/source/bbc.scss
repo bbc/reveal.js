@@ -51,12 +51,26 @@ body {
 	line-height: 1.2;
 }
 
+p {
+	text-align: left;
+}
+
 div.slides {
 	background-image: url('img/bbc-blocks-dark.png');
 	background-repeat: no-repeat;
 	background-position: top left;
 }
 
+.small-image {
+	width: 37%;
+	height: 40%;
+	text-align: center;
+}
+
 // Theme template ------------------------------
 @import "../template/theme";
 // ---------------------------------------------
+
+.reveal table {
+	font-size: 90%;
+}
