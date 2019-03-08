@@ -22,8 +22,8 @@ $mainColor: #222;
 $headingColor: #222;
 
 $mainFontSize: 42px;
-$mainFont: Reith Sans, Helmet, FreeSans, Helvetica, Arial, sans-serif;
-$headingFont: Reith Sans, Helmet, FreeSans, Helvetica, Arial, sans-serif;
+$mainFont: ReithSans, Helmet, FreeSans, Helvetica, Arial, sans-serif;
+$headingFont: ReithSans, Helmet, FreeSans, Helvetica, Arial, sans-serif;
 $headingTextShadow: none;
 $headingLetterSpacing: normal;
 $headingTextTransform: uppercase;
@@ -36,6 +36,25 @@ $heading1Size: 2.5em;
 $heading2Size: 1.6em;
 $heading3Size: 1.3em;
 $heading4Size: 1.0em;
+
+@font-face {
+    font-family: "ReithSerif";
+    src: url("BBCReithSerif_W_Rg.woff2") format("woff2"), url("BBCReithSerif_W_Rg.woff") format("woff");
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "ReithSans";
+    src: url("BBCReithSans_W_Rg.woff2") format("woff2");
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "ReithSans";
+    font-weight: bold;
+    src: url("BBCReithSans_W_Bd.woff2") format("woff2");
+    font-display: swap;
+}
 
 section.has-dark-background {
 	&, h1, h2, h3, h4, h5, h6 {
