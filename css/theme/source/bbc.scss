@@ -12,7 +12,8 @@
 
 
 // Include theme-specific fonts
-@import url(fonts/source-sans-pro/source-sans-pro.css);
+@import url(../../lib/font/source-sans-pro/source-sans-pro.css);
+@import url(http://gel.files.bbci.co.uk/r2.302/bbc-reith.css);
 
 
 // Override theme settings (see ../template/settings.scss)
@@ -22,8 +23,8 @@ $mainColor: #222;
 $headingColor: #222;
 
 $mainFontSize: 42px;
-$mainFont: 'Source Sans Pro', Helvetica, sans-serif;
-$headingFont: 'Source Sans Pro', Helvetica, sans-serif;
+$mainFont: ReithSans, Helmet, FreeSans, Helvetica, Arial, sans-serif;
+$headingFont: ReithSerif, Helmet, FreeSans, Helvetica, Arial, sans-serif;
 $headingTextShadow: none;
 $headingLetterSpacing: normal;
 $headingTextTransform: uppercase;
@@ -43,7 +44,34 @@ section.has-dark-background {
 	}
 }
 
+html {
+	line-height: 1.125;
+}
+
+body {
+	line-height: 1.2;
+}
+
+p {
+	text-align: left;
+}
+
+div.slides {
+	background-image: url('img/bbc-blocks-dark.png');
+	background-repeat: no-repeat;
+	background-position: top left;
+}
+
+.small-image {
+	width: 37%;
+	height: 40%;
+	text-align: center;
+}
 
 // Theme template ------------------------------
 @import "../template/theme";
 // ---------------------------------------------
+
+.reveal table {
+	font-size: 90%;
+}
