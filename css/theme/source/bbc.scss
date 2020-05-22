@@ -16,7 +16,7 @@
 @import url(https://gel.files.bbci.co.uk/r2.511/bbc-reith.css);
 
 // Override theme settings (see ../template/settings.scss)
-$backgroundColor: #fff;
+$backgroundColor: #F4F1F4;
 
 $mainColor: #222;
 $headingColor: #222;
@@ -24,10 +24,11 @@ $headingColor: #222;
 $mainFontSize: 42px;
 $mainFont: ReithSans, Helmet, FreeSans, Helvetica, Arial, sans-serif;
 $headingFont: ReithSerif, Helmet, FreeSans, Helvetica, Arial, sans-serif;
+$headingMargin: 0 0 $blockMargin+10px 0;
 $headingTextShadow: none;
 $headingLetterSpacing: normal;
-$headingTextTransform: uppercase;
-$headingFontWeight: 600;
+$headingTextTransform: none;
+$headingFontWeight: lighter;
 $linkColor: #2a76dd;
 $linkColorHover: lighten( $linkColor, 15% );
 $selectionBackgroundColor: lighten( $linkColor, 25% );
@@ -73,4 +74,8 @@ div.slides {
 
 .reveal table {
 	font-size: 90%;
+}
+
+.reveal .slides > section > section {
+	padding-top: 30px; 
 }
