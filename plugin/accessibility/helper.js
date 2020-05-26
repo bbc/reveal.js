@@ -16,7 +16,7 @@ var PLUGIN_SLIDES = [];
 
 new SlideAccessibility();
 
-new SkipLinks({ enabled:true });
+new SkipLinks({ enabled:false }); // modified to prevent big ToC appearing on every slide
 
 function SlideAccessibility() {
 
