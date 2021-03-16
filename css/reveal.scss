@@ -645,7 +645,6 @@ $controlsArrowAngleActive: 36deg;
 	display: none;
 	position: absolute;
 	width: 100%;
-	padding: 20px 0px;
 	pointer-events: auto;
 
 	z-index: 10;
@@ -1396,7 +1395,7 @@ $controlsArrowAngleActive: 36deg;
 }
 
 .reveal.rtl .progress span {
-	float: right
+	transform-origin: 100% 0;
 }
 
 /*********************************************

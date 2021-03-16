@@ -1,6 +1,8 @@
 import { HORIZONTAL_SLIDES_SELECTOR, VERTICAL_SLIDES_SELECTOR } from '../utils/constants.js'
-import { extend, queryAll, closestParent } from '../utils/util.js'
+import { extend, queryAll, closest } from '../utils/util.js'
 import { isMobile } from '../utils/device.js'
+
+import fitty from 'fitty';
 
 /**
  * Handles loading, unloading and playback of slide
@@ -68,6 +70,11 @@ export default class SlideContent {
 				sources += 1;
 			} );
 
+			// Enable inline video playback in mobile Safari
+			if( isMobile && media.tagName === 'VIDEO' ) {
+				media.setAttribute( 'playsinline', '' );
+			}
+
 			// If we rewrote sources for this video/audio element, we need
 			// to manually tell it to load from its new origin
 			if( sources > 0 ) {
@@ -109,12 +116,13 @@ export default class SlideContent {
 						video.muted = true;
 					}
 
-					// Inline video playback works (at least in Mobile Safari) as
-					// long as the video is muted and the `playsinline` attribute is
-					// present
+					// Enable inline playback in mobile Safari
+					//
+					// Mute is required for video to play when using
+					// swipe gestures to navigate since they don't
+					// count as direct user actions :'(
 					if( isMobile ) {
 						video.muted = true;
-						video.autoplay = true;
 						video.setAttribute( 'playsinline', '' );
 					}
 
@@ -158,6 +166,19 @@ export default class SlideContent {
 			}
 
 		}
+
+		// Autosize text with the r-fit-text class based on the
+		// size of its container. This needs to happen after the
+		// slide is visible in order to measure the text.
+		Array.from( slide.querySelectorAll( '.r-fit-text:not([data-fitted])' ) ).forEach( element => {
+			element.dataset.fitted = '';
+			fitty( element, {
+				minSize: 24,
+				maxSize: this.Reveal.getConfig().height * 0.8,
+				observeMutations: false,
+				observeWindow: false
+			} );
+		} );
 
 	}
 
@@ -240,7 +261,7 @@ export default class SlideContent {
 
 			// HTML5 media elements
 			queryAll( element, 'video, audio' ).forEach( el => {
-				if( closestParent( el, '.fragment' ) && !closestParent( el, '.fragment.visible' ) ) {
+				if( closest( el, '.fragment' ) && !closest( el, '.fragment.visible' ) ) {
 					return;
 				}
 
@@ -250,7 +271,7 @@ export default class SlideContent {
 				// If no global setting is available, fall back on the element's
 				// own autoplay setting
 				if( typeof autoplay !== 'boolean' ) {
-					autoplay = el.hasAttribute( 'data-autoplay' ) || !!closestParent( el, '.slide-background' );
+					autoplay = el.hasAttribute( 'data-autoplay' ) || !!closest( el, '.slide-background' );
 				}
 
 				if( autoplay && typeof el.play === 'function' ) {
@@ -288,7 +309,7 @@ export default class SlideContent {
 
 			// Normal iframes
 			queryAll( element, 'iframe[src]' ).forEach( el => {
-				if( closestParent( el, '.fragment' ) && !closestParent( el, '.fragment.visible' ) ) {
+				if( closest( el, '.fragment' ) && !closest( el, '.fragment.visible' ) ) {
 					return;
 				}
 
@@ -297,7 +318,7 @@ export default class SlideContent {
 
 			// Lazy loading iframes
 			queryAll( element, 'iframe[data-src]' ).forEach( el => {
-				if( closestParent( el, '.fragment' ) && !closestParent( el, '.fragment.visible' ) ) {
+				if( closest( el, '.fragment' ) && !closest( el, '.fragment.visible' ) ) {
 					return;
 				}
 
@@ -320,8 +341,8 @@ export default class SlideContent {
 	 */
 	startEmbeddedMedia( event ) {
 
-		let isAttachedToDOM = !!closestParent( event.target, 'html' ),
-			isVisible  		= !!closestParent( event.target, '.present' );
+		let isAttachedToDOM = !!closest( event.target, 'html' ),
+			isVisible  		= !!closest( event.target, '.present' );
 
 		if( isAttachedToDOM && isVisible ) {
 			event.target.currentTime = 0;
@@ -344,8 +365,8 @@ export default class SlideContent {
 
 		if( iframe && iframe.contentWindow ) {
 
-			let isAttachedToDOM = !!closestParent( event.target, 'html' ),
-				isVisible  		= !!closestParent( event.target, '.present' );
+			let isAttachedToDOM = !!closest( event.target, 'html' ),
+				isVisible  		= !!closest( event.target, '.present' );
 
 			if( isAttachedToDOM && isVisible ) {
 
@@ -355,7 +376,7 @@ export default class SlideContent {
 				// If no global setting is available, fall back on the element's
 				// own autoplay setting
 				if( typeof autoplay !== 'boolean' ) {
-					autoplay = iframe.hasAttribute( 'data-autoplay' ) || !!closestParent( iframe, '.slide-background' );
+					autoplay = iframe.hasAttribute( 'data-autoplay' ) || !!closest( iframe, '.slide-background' );
 				}
 
 				// YouTube postMessage API

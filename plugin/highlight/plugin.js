@@ -16,6 +16,8 @@ const Plugin = {
 	HIGHLIGHT_LINE_DELIMITER: ',',
 	HIGHLIGHT_LINE_RANGE_DELIMITER: '-',
 
+	hljs: hljs,
+
 	/**
 	 * Highlights code blocks withing the given deck.
 	 *
@@ -32,6 +34,15 @@ const Plugin = {
 		config.escapeHTML = typeof config.escapeHTML === 'boolean' ? config.escapeHTML : true;
 
 		[].slice.call( reveal.getRevealElement().querySelectorAll( 'pre code' ) ).forEach( function( block ) {
+
+			// Code can optionally be wrapped in script template to avoid
+			// HTML being parsed by the browser (i.e. when you need to
+			// include <, > or & in your code).
+			let substitute = block.querySelector( 'script[type="text/template"]' );
+			if( substitute ) {
+				// textContent handles the HTML entity escapes for us
+				block.textContent = substitute.innerHTML;
+			}
 
 			// Trim whitespace if the "data-trim" attribute is present
 			if( block.hasAttribute( 'data-trim' ) && typeof block.innerHTML.trim === 'function' ) {
