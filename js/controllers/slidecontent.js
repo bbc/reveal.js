@@ -101,8 +101,9 @@ export default class SlideContent {
 					backgroundVideoMuted = slide.hasAttribute( 'data-background-video-muted' );
 
 				// Images
-				if( backgroundImage ) {
-					backgroundContent.style.backgroundImage = 'url('+ encodeURI( backgroundImage ) +')';
+				if (backgroundImage) {
+					let backgroundImageURLs = backgroundImage.split(',').map(x => x.trim()).map(x => encodeURI(x));
+					backgroundContent.style.backgroundImage = 'url(' + backgroundImageURLs.join('), url(') + ')';
 				}
 				// Videos
 				else if ( backgroundVideo && !this.Reveal.isSpeakerNotes() ) {
