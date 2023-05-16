@@ -4,16 +4,18 @@
  * of external markdown documents.
  */
 
-import marked from 'marked'
+import { marked } from 'marked';
 
-const DEFAULT_SLIDE_SEPARATOR = '^\r?\n---\r?\n$',
+const DEFAULT_SLIDE_SEPARATOR = '\r?\n---\r?\n',
 	  DEFAULT_NOTES_SEPARATOR = 'notes?:',
 	  DEFAULT_ELEMENT_ATTRIBUTES_SEPARATOR = '\\\.element\\\s*?(.+?)$',
 	  DEFAULT_SLIDE_ATTRIBUTES_SEPARATOR = '\\\.slide:\\\s*?(\\\S.+?)$';
 
 const SCRIPT_END_PLACEHOLDER = '__SCRIPT_END__';
 
-const CODE_LINE_NUMBER_REGEX = /\[([\s\d,|-]*)\]/;
+// match an optional line number offset and highlight line numbers
+// [<line numbers>] or [<offset>: <line numbers>]
+const CODE_LINE_NUMBER_REGEX = /\[\s*((\d*):)?\s*([\s\d,|-]*)\]/;
 
 const HTML_ESCAPE_MAP = {
   '&': '&amp;',
@@ -47,10 +49,10 @@ const Plugin = () => {
 			leadingTabs = text.match( /^\n?(\t*)/ )[1].length;
 
 		if( leadingTabs > 0 ) {
-			text = text.replace( new RegExp('\\n?\\t{' + leadingTabs + '}','g'), '\n' );
+			text = text.replace( new RegExp('\\n?\\t{' + leadingTabs + '}(.*)','g'), function(m, p1) { return '\n' + p1 ; } );
 		}
 		else if( leadingWs > 1 ) {
-			text = text.replace( new RegExp('\\n? {' + leadingWs + '}', 'g'), '\n' );
+			text = text.replace( new RegExp('\\n? {' + leadingWs + '}(.*)', 'g'), function(m, p1) { return '\n' + p1 ; } );
 		}
 
 		return text;
@@ -206,7 +208,7 @@ const Plugin = () => {
 
 			var externalPromises = [];
 
-			[].slice.call( scope.querySelectorAll( '[data-markdown]:not([data-markdown-parsed])') ).forEach( function( section, i ) {
+			[].slice.call( scope.querySelectorAll( 'section[data-markdown]:not([data-markdown-parsed])') ).forEach( function( section, i ) {
 
 				if( section.getAttribute( 'data-markdown' ).length ) {
 
@@ -234,7 +236,7 @@ const Plugin = () => {
 					) );
 
 				}
-				else if( section.getAttribute( 'data-separator' ) || section.getAttribute( 'data-separator-vertical' ) || section.getAttribute( 'data-separator-notes' ) ) {
+				else {
 
 					section.outerHTML = slidify( getMarkdownFromSlide( section ), {
 						separator: section.getAttribute( 'data-separator' ),
@@ -243,9 +245,6 @@ const Plugin = () => {
 						attributes: getForwardedAttributes( section )
 					});
 
-				}
-				else {
-					section.innerHTML = createMarkdownSlide( getMarkdownFromSlide( section ) );
 				}
 
 			});
@@ -424,34 +423,53 @@ const Plugin = () => {
 
 			deck = reveal;
 
-			let renderer = new marked.Renderer();
+			let { renderer, animateLists, ...markedOptions } = deck.getConfig().markdown || {};
 
-			renderer.code = ( code, language ) => {
+			if( !renderer ) {
+				renderer = new marked.Renderer();
 
-				// Off by default
-				let lineNumbers = '';
+				renderer.code = ( code, language ) => {
 
-				// Users can opt in to show line numbers and highlight
-				// specific lines.
-				// ```javascript []        show line numbers
-				// ```javascript [1,4-8]   highlights lines 1 and 4-8
-				if( CODE_LINE_NUMBER_REGEX.test( language ) ) {
-					lineNumbers = language.match( CODE_LINE_NUMBER_REGEX )[1].trim();
-					lineNumbers = `data-line-numbers="${lineNumbers}"`;
-					language = language.replace( CODE_LINE_NUMBER_REGEX, '' ).trim();
-				}
+					// Off by default
+					let lineNumberOffset = '';
+					let lineNumbers = '';
 
-				// Escape before this gets injected into the DOM to
-				// avoid having the HTML parser alter our code before
-				// highlight.js is able to read it
-				code = escapeForHTML( code );
+					// Users can opt in to show line numbers and highlight
+					// specific lines.
+					// ```javascript []        show line numbers
+					// ```javascript [1,4-8]   highlights lines 1 and 4-8
+					// optional line number offset:
+					// ```javascript [25: 1,4-8]   start line numbering at 25,
+					//                             highlights lines 1 (numbered as 25) and 4-8 (numbered as 28-32)
+					if( CODE_LINE_NUMBER_REGEX.test( language ) ) {
+						let lineNumberOffsetMatch =  language.match( CODE_LINE_NUMBER_REGEX )[2];
+						if (lineNumberOffsetMatch){
+							lineNumberOffset =  `data-ln-start-from="${lineNumberOffsetMatch.trim()}"`;
+						}
 
-				return `<pre><code ${lineNumbers} class="${language}">${code}</code></pre>`;
-			};
+						lineNumbers = language.match( CODE_LINE_NUMBER_REGEX )[3].trim();
+						lineNumbers = `data-line-numbers="${lineNumbers}"`;
+						language = language.replace( CODE_LINE_NUMBER_REGEX, '' ).trim();
+					}
+
+					// Escape before this gets injected into the DOM to
+					// avoid having the HTML parser alter our code before
+					// highlight.js is able to read it
+					code = escapeForHTML( code );
+
+					// return `<pre><code ${lineNumbers} class="${language}">${code}</code></pre>`;
+					
+					return `<pre><code ${lineNumbers} ${lineNumberOffset} class="${language}">${code}</code></pre>`;
+				};
+			}
+
+			if( animateLists === true ) {
+				renderer.listitem = text => `<li class="fragment">${text}</li>`;
+			}
 
 			marked.setOptions( {
 				renderer,
-				...deck.getConfig().markdown
+				...markedOptions
 			} );
 
 			return processSlides( deck.getRevealElement() ).then( convertSlides );
