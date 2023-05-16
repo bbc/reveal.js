@@ -4,7 +4,7 @@
  * By Hakim El Hattab, http://hakim.se
  */
 @import url(fonts/source-sans-pro/source-sans-pro.css);
-@import url(https://gel.files.bbci.co.uk/r2.512/bbc-reith.css);
+@import url(https://static.files.bbci.co.uk/fonts/reith/2.512/bbc-reith.css);
 section.has-dark-background, section.has-dark-background h1, section.has-dark-background h2, section.has-dark-background h3, section.has-dark-background h4, section.has-dark-background h5, section.has-dark-background h6 {
   color: #fff; }
 
