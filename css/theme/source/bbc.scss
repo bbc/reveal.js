@@ -31,7 +31,7 @@ sans-serif;
 $headingMargin: 0 0 $blockMargin+10px 0;
 $headingTextShadow: none;
 $headingLetterSpacing: normal;
-$headingTextTransform: none;
+$headingTextTransform: capitalize;
 $headingFontWeight: lighter;
 $linkColor: #2a76dd;
 $linkColorHover: lighten( $linkColor, 15%);
